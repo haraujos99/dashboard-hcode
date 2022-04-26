@@ -1,0 +1,31 @@
+.card {
+    .section-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        h6 {
+            margin: 0;
+        }
+        button {
+            background-color: #fff;
+            color: #e91e63;
+            margin: 0;
+        }
+    }
+    
+}
+
+.modal {
+    .modal-header {
+        .btn-close {
+            background-color: #000;
+        }
+    }
+    .modal-body {
+        .form-control {
+            border: 1px solid #d2d6da;
+            padding: 0.5em;
+        }
+    }
+}
