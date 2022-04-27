@@ -7,20 +7,31 @@ let users = [];
 
 const tableUsers = document.querySelector("table#table-users tbody");
 
-const modalUsersCreate = new bootstrap.Modal(document.querySelector('div#modal-users-create'), {});
-const formUsersCreate = document.querySelector("div#modal-users-create #form-users-create");
+let modalUsersCreate = null;
+const modalUsersCreateElement = document.querySelector('#modal-users-create');
 
-const modalUsersUpdate = new bootstrap.Modal(document.querySelector("#modal-users-update"), {});
+if (modalUsersCreateElement) {
+    modalUsersCreate = new bootstrap.Modal(modalUsersCreateElement, {});
+}
+
+const formUsersCreate = document.querySelector("#modal-users-create #form-users-create");
+
+let modalUsersUpdate = null;
+const modalUsersUpdateElement = document.querySelector("#modal-users-update");
+
+if (modalUsersUpdateElement) {
+    modalUsersUpdate = new bootstrap.Modal(modalUsersUpdateElement, {});
+}
 const formUsersUpdate = document.querySelector("#form-users-update");
 
 function renderUsers() {
 
     tableUsers.innerHTML = '';
 
-    users.forEach(async function(item) {
+    users.forEach(async function (item) {
 
         const tableRow = document.createElement("tr");
-    
+
         tableRow.innerHTML = `
             <td>
                 <div class="d-flex px-2 py-1">
@@ -28,7 +39,7 @@ function renderUsers() {
                         <img src="${item.photo ? "./assets/img/cameras/" + item.photo : "./assets/img/tesla-model-s.png"}" class="avatar avatar-sm me-3 border-radius-lg" alt="${item.name}">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">${item.prdouct}</h6>
+                        <h6 class="mb-0 text-sm">${item.product}</h6>
                     </div>
                 </div>
             </td>
@@ -80,97 +91,102 @@ function renderUsers() {
             modalUsersUpdate.show();
 
         });
-    
+
         tableRow.querySelector(".button-delete").addEventListener("click", async (event) => {
-    
+
             event.preventDefault();
-    
-            if (confirm(`Deseja realmente excluir o produto ${item.prdouct}?`)) {
+
+            if (confirm(`Deseja realmente excluir o produto ${item.product}?`)) {
 
                 await deleteDoc(doc(database, "models", item.id));
 
                 tableRow.remove();
 
             }
-    
+
         });
-    
+
         tableUsers.appendChild(tableRow);
-    
+
     });
 
 }
 
-if(tableUsers){
+if (tableUsers) {
     onSnapshot(collection(database, "models"), (data) => {
-    
+
         users = [];
-    
-        data.forEach(document => {        
+
+        data.forEach(document => {
             const object = {
                 ...document.data(),
                 id: document.id,
             };
             users.push(object);
         });
-    
+
         renderUsers();
-    
+
     });
-    
+
 }
-formUsersCreate.addEventListener("submit", async (event) => {
 
-    event.preventDefault();
+if (formUsersCreate) {
+    formUsersCreate.addEventListener("submit", async (event) => {
 
-    const formData = new FormData(formUsersCreate);
+        event.preventDefault();
 
-    if (!formData.get("product")) {
-        console.error("O nome do produto é obrigatório.");
-        return false;
-    }
+        const formData = new FormData(formUsersCreate);
 
-    if (!formData.get("categorie")) {
-        console.error("A categoria é obrigatória.");
-        return false;
-    }
+        if (!formData.get("product")) {
+            console.error("O nome do produto é obrigatório.");
+            return false;
+        }
 
-    if (!formData.get("year")) {
-        console.error("O ano de lançamento é obrigatório");
-        return false;
-    }
+        if (!formData.get("categorie")) {
+            console.error("A categoria é obrigatória.");
+            return false;
+        }
 
-    if (!formData.get("status")) {
-        console.error("O status é obrigatório.");
-        return false;
-    }
+        if (!formData.get("year")) {
+            console.error("O ano de lançamento é obrigatório");
+            return false;
+        }
 
-    await setDoc(doc(database, "models", uuidv4()), {
-        product: formData.get("product"),
-        categorie: formData.get("categorie"),
-        year: formData.get("year"),
-        status: formData.get("status"),
-        photo: formData.get("photo")
+        if (!formData.get("status")) {
+            console.error("O status é obrigatório.");
+            return false;
+        }
+
+        await setDoc(doc(database, "models", uuidv4()), {
+            product: formData.get("product"),
+            categorie: formData.get("categorie"),
+            year: formData.get("year"),
+            status: formData.get("status"),
+            photo: formData.get("photo")
+        });
+
+        modalUsersCreate.hide();
+
     });
+}
+
+if(formUsersUpdate){
+    formUsersUpdate.addEventListener("submit", async (e) => {
     
-    modalUsersCreate.hide();
-
-});
-
-formUsersUpdate.addEventListener("submit", async (e) => {
-
-    e.preventDefault();
-
-    const formData = new FormData(formUsersUpdate);
-
-    await updateDoc(doc(database, "models", formData.get("id")), {
-        product: formData.get("product"),
-        categorie: formData.get("categorie"),
-        year: formData.get("year"),
-        status: formData.get("status"),
-        photo: formData.get("photo")
+        e.preventDefault();
+    
+        const formData = new FormData(formUsersUpdate);
+    
+        await updateDoc(doc(database, "models", formData.get("id")), {
+            product: formData.get("product"),
+            categorie: formData.get("categorie"),
+            year: formData.get("year"),
+            status: formData.get("status"),
+            photo: formData.get("photo")
+        });
+    
+        modalUsersUpdate.hide();
+    
     });
-
-    modalUsersUpdate.hide();
-
-});
+}

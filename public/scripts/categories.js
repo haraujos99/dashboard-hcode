@@ -7,10 +7,20 @@ let categories = [];
 
 const tableCategories = document.querySelector("table#table-categories tbody");
 
-const modalCategoriesCreate = new bootstrap.Modal(document.querySelector('#modal-categories-create'), {});
+let modalCategoriesCreate = null;
+const modalCategoriesCreateElement = document.querySelector('#modal-categories-create');
+
+if(modalCategoriesCreateElement){
+    modalCategoriesCreate = new bootstrap.Modal(modalCategoriesCreateElement, {});
+}
 const formCategoriesCreate = document.querySelector("#modal-categories-create #form-categories-create");
 
-const modalCategoriesUpdate = new bootstrap.Modal(document.querySelector("#modal-categories-update"), {});
+let modalCategoriesUpdate = null;
+const modalCategoriesUpdateElement = document.querySelector("#modal-categories-update");
+
+if(modalCategoriesUpdateElement){
+    modalCategoriesUpdate = new bootstrap.Modal(modalCategoriesUpdateElement, {})
+}
 const formCategoriesUpdate = document.querySelector("#form-categories-update");
 
 function renderCategories() {
@@ -26,7 +36,7 @@ function renderCategories() {
             <td>
                 <div class="d-flex px-2 py-1">
                     <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">${item.idCategorie} ${item.name}</h6>
+                        <h6 class="mb-0 text-sm">${item.name}</h6>
                     </div>
                 </div>
             </td>
@@ -77,9 +87,9 @@ function renderCategories() {
 
             event.preventDefault();
 
-            if (confirm(`Deseja realmente excluir o usuário ${item.name}?`)) {
+            if (confirm(`Deseja realmente excluir a categoria ${item.name}?`)) {
 
-                await deleteDoc(doc(database, "models", item.id));
+                await deleteDoc(doc(database, "categories", item.id));
 
                 tableRow.remove();
 
@@ -112,49 +122,47 @@ if(tableCategories){
     });
 }
 
-formCategoriesCreate.addEventListener("submit", async (event) => {
 
-    event.preventDefault();
-
-    const formData = new FormData(formCategoriesCreate);
-
-    if (!formData.get("idCategorie")) {
-        console.error("O id da categoria é obrigatório.");
-        return false;
-    }
-
-    if (!formData.get("name")) {
-        console.error("O nome da categoria é obrigatória.");
-        return false;
-    }
-
-    if (!formData.get("storage")) {
-        console.error("A quantidade em estoque é obrigatória");
-        return false;
-    }
-
-    await setDoc(doc(database, "categories", uuidv4()), {
-        id: formData.get("idCategorie"),
-        name: formData.get("name"),
-        storage: formData.get("storage")
+if(formCategoriesCreate){
+    formCategoriesCreate.addEventListener("submit", async (event) => {
+    
+        event.preventDefault();
+    
+        const formData = new FormData(formCategoriesCreate);
+    
+        if (!formData.get("name")) {
+            console.error("O nome da categoria é obrigatória.");
+            return false;
+        }
+    
+        if (!formData.get("storage")) {
+            console.error("A quantidade em estoque é obrigatória");
+            return false;
+        }
+    
+        await setDoc(doc(database, "categories", uuidv4()), {
+            name: formData.get("name"),
+            storage: formData.get("storage")
+        });
+    
+        modalCategoriesCreate.hide();
+    
     });
+}
 
-    modalCategoriesCreate.hide();
-
-});
-
-formCategoriesUpdate.addEventListener("submit", async (e) => {
-
-    e.preventDefault();
-
-    const formData = new FormData(formCategoriesUpdate);
-
-    await updateDoc(doc(database, "categories", formData.get("id")), {
-        idCategorie: formData.get("idCategorie"),
-        name: formData.get("name"),
-        storage: formData.get("storage")
+if(formCategoriesUpdate){
+    formCategoriesUpdate.addEventListener("submit", async (e) => {
+    
+        e.preventDefault();
+    
+        const formData = new FormData(formCategoriesUpdate);
+    
+        await updateDoc(doc(database, "categories", formData.get("id")), {
+            name: formData.get("name"),
+            storage: formData.get("storage")
+        });
+    
+        modalCategoriesUpdate.hide();
+    
     });
-
-    modalCategoriesUpdate.hide();
-
-});
+}
