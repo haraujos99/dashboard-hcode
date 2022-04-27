@@ -93,23 +93,24 @@ function renderCategories() {
 
 }
 
-onSnapshot(collection(database, "categories"), (data) => {
-
-    categories = [];
-
-    data.forEach(document => {
-        console.log(document.data);
-
-        const object = {
-            ...document.data(),
-            id: document.id,
-        };
-        categories.push(object);
+if(tableCategories){
+    onSnapshot(collection(database, "categories"), (data) => {
+    
+        categories = [];
+    
+        data.forEach(document => {
+    
+            const object = {
+                ...document.data(),
+                id: document.id,
+            };
+            categories.push(object);
+        });
+    
+        renderCategories();
+    
     });
-
-    renderCategories();
-
-});
+}
 
 formCategoriesCreate.addEventListener("submit", async (event) => {
 
@@ -149,7 +150,7 @@ formCategoriesUpdate.addEventListener("submit", async (e) => {
     const formData = new FormData(formCategoriesUpdate);
 
     await updateDoc(doc(database, "categories", formData.get("id")), {
-        id: formData.get("idCategorie"),
+        idCategorie: formData.get("idCategorie"),
         name: formData.get("name"),
         storage: formData.get("storage")
     });

@@ -7,8 +7,8 @@ let users = [];
 
 const tableUsers = document.querySelector("table#table-users tbody");
 
-const modalUsersCreate = new bootstrap.Modal(document.querySelector('#modal-users-create'), {});
-const formUsersCreate = document.querySelector("#modal-users-create #form-users-create");
+const modalUsersCreate = new bootstrap.Modal(document.querySelector('div#modal-users-create'), {});
+const formUsersCreate = document.querySelector("div#modal-users-create #form-users-create");
 
 const modalUsersUpdate = new bootstrap.Modal(document.querySelector("#modal-users-update"), {});
 const formUsersUpdate = document.querySelector("#form-users-update");
@@ -85,7 +85,7 @@ function renderUsers() {
     
             event.preventDefault();
     
-            if (confirm(`Deseja realmente excluir o usuário ${item.name}?`)) {
+            if (confirm(`Deseja realmente excluir o produto ${item.prdouct}?`)) {
 
                 await deleteDoc(doc(database, "models", item.id));
 
@@ -101,22 +101,24 @@ function renderUsers() {
 
 }
 
-onSnapshot(collection(database, "models"), (data) => {
-
-    users = [];
-
-    data.forEach(document => {        
-        const object = {
-            ...document.data(),
-            id: document.id,
-        };
-        users.push(object);
+if(tableUsers){
+    onSnapshot(collection(database, "models"), (data) => {
+    
+        users = [];
+    
+        data.forEach(document => {        
+            const object = {
+                ...document.data(),
+                id: document.id,
+            };
+            users.push(object);
+        });
+    
+        renderUsers();
+    
     });
-
-    renderUsers();
-
-});
-
+    
+}
 formUsersCreate.addEventListener("submit", async (event) => {
 
     event.preventDefault();
